@@ -1,10 +1,12 @@
 #include "cmd.h"
 #include "utils.h"
 #include <dirent.h>
+#include <linux/limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 cmd_t builtin_cmds[] = {
     {.name = "exit", .handler = cmd_exit},
@@ -69,9 +71,15 @@ int cmd_type(char **args) {
             struct dirent *entry;
             while ((entry = readdir(dir)) != NULL) {
                 if (strcmp(args[i], entry->d_name) == 0) {
-                    found = true;
-                    printf("%s is %s/%s\n", args[i], token, entry->d_name);
-                    break;
+                    char full_path[PATH_MAX];
+                    snprintf(full_path, PATH_MAX, "%s/%s", token,
+                             entry->d_name);
+
+                    if (access(full_path, X_OK) == 0) {
+                        found = true;
+                        printf("%s is %s\n", args[i], full_path);
+                        break;
+                    }
                 }
             }
             closedir(dir);
