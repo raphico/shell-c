@@ -18,6 +18,6 @@ char **tokenize_input(char *input) {
     }
 
     tokens[i] = NULL;
-    
+
     return tokens;
 }

@@ -1,8 +1,8 @@
 #include "cmd.h"
 #include "utils.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 cmd_t builtin_cmds[] = {
     {.name = "exit", .handler = cmd_exit},
