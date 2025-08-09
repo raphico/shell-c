@@ -1,4 +1,7 @@
+#include "cmd.h"
+#include "parser.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char *argv[]) {
@@ -14,16 +17,23 @@ int main(int argc, char *argv[]) {
         }
 
         input[strcspn(input, "\n")] = '\0';
-
-        if (strncmp(input, "exit", 4) == 0) {
-            break;
-        } else if (strncmp(input, "echo", 4) == 0) {
-            char *msg = input + 5;
-            printf("%s\n", msg);
-        } else {
-
-            printf("%s: command not found\n", input);
+        char **args = tokenize_input(input);
+        if (!args || !args[0]) {
+            free(args);
+            continue;
         }
+
+        cmd_handler_t handler = get_cmd_handler(args[0]);
+        if (!handler) {
+            printf("%s: command not found\n", args[0]);
+        } else {
+            int status = handler(args + 1);
+            if (status == SHELL_EXIT) {
+                return 0;
+            }
+        }
+
+        free(args);
     }
 
     return 0;

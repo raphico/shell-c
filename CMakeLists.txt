@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(codecrafters-shell)
+project(codecrafters-shell LANGUAGES C)
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SOURCE_FILES src/*.c src/*.h)
 
