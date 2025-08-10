@@ -10,19 +10,25 @@ char **tokenize_input(char *input, int *argc) {
     }
 
     int i = 0, j = 0, count = 0, n = strlen(input);
-    bool in_quote = false;
+    bool in_squote = false, in_dquote = false;
     char buf[1024];
 
     while (i < n) {
         char c = input[i];
 
-        if (c == '\'') {
-            in_quote = !in_quote;
+        if (c == '\'' && !in_dquote) {
+            in_squote = !in_squote;
             i++;
             continue;
         }
 
-        if (c == ' ' && !in_quote) {
+        if (c == '"' && !in_squote) {
+            in_dquote = !in_dquote;
+            i++;
+            continue;
+        }
+
+        if (c == ' ' && (!in_squote || !in_dquote)) {
             if (j > 0) {
                 buf[j] = '\0';
                 tokens[count++] = strdup(buf);
