@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
         cmd_handler_t handler = get_cmd_handler(args[0]);
         if (!handler) {
-            if (find_and_run_cmd(args[0], args + 1) != 0) {
+            if (find_and_run_cmd(args[0], args) != 0) {
                 printf("%s: command not found\n", args[0]);
             }
         } else {
