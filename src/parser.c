@@ -4,7 +4,7 @@
 #include <string.h>
 
 char **tokenize_input(char *input, int *argc) {
-    char **tokens = malloc(sizeof(char *) * MAX_TOKENS);
+    char **tokens = malloc(sizeof(char *) * (MAX_TOKENS + 1));
     if (!tokens) {
         return NULL;
     }
@@ -45,6 +45,8 @@ char **tokenize_input(char *input, int *argc) {
         buf[j] = '\0';
         tokens[count++] = strdup(buf);
     }
+
+    tokens[count] = NULL;
 
     *argc = count;
     return tokens;
