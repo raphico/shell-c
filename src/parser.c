@@ -16,7 +16,7 @@ char **tokenize_input(char *input, int *argc) {
     while (i < n) {
         char c = input[i];
 
-        if (c == '\\' && !is_escaped && !in_dquote && !in_squote) {
+        if (c == '\\' && !is_escaped) {
             i++;
             is_escaped = true;
             continue;
