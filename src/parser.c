@@ -22,13 +22,13 @@ char **tokenize_input(char *input, int *argc) {
             continue;
         }
 
-        if (c == '\'' && !in_dquote) {
+        if (c == '\'' && !in_dquote && !is_escaped) {
             in_squote = !in_squote;
             i++;
             continue;
         }
 
-        if (c == '"' && !in_squote) {
+        if (c == '"' && !in_squote && !is_escaped) {
             in_dquote = !in_dquote;
             i++;
             continue;
@@ -52,6 +52,9 @@ char **tokenize_input(char *input, int *argc) {
         }
 
         i++;
+        if (is_escaped) {
+            is_escaped = false;
+        }
     }
 
     if (j > 0) {
