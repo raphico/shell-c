@@ -1,11 +1,10 @@
 #include "cmd.h"
-#include "utils.h"
 #include <dirent.h>
 #include <linux/limits.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 cmd_t builtin_cmds[] = {
@@ -15,7 +14,7 @@ cmd_t builtin_cmds[] = {
 };
 
 cmd_handler_t get_cmd_handler(const char *name) {
-    for (int i = 0, n = ARRAY_SIZE(builtin_cmds); i < n; i++) {
+    for (int i = 0, n = NO_BUILTIN_CMDS; i < n; i++) {
         if (strcmp(name, builtin_cmds[i].name) == 0) {
             return builtin_cmds[i].handler;
         }
@@ -24,79 +23,35 @@ cmd_handler_t get_cmd_handler(const char *name) {
     return NULL;
 }
 
-int cmd_echo(char **args) {
-    for (int i = 0; args[i] != NULL; i++) {
-        printf("%s ", args[i]);
+int find_and_run_cmd(const char *name, char **args) {
+    int pipefd[2];
+    pipe(pipefd);
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        return -1;
+    } else if (pid == 0) {
+        // child process
+        close(pipefd[0]);               // close unused write end
+        dup2(pipefd[1], STDOUT_FILENO); // redirect the stdout to the write end
+        close(pipefd[1]);               // close original write end
+
+        execvp(name, args);
+        return -1;
+    } else {
+        // parent process
+        close(pipefd[1]); // close unused read end
+
+        char buf[1024];
+        ssize_t count = 0;
+        while ((count = read(pipefd[0], buf, sizeof(buf) - 1)) > 0) {
+            buf[count] = '\0';
+            printf("%s", buf);
+        }
+
+        close(pipefd[0]);
+        waitpid(pid, NULL, 0);
+
+        return 0;
     }
-
-    printf("\n");
-    return 0;
-}
-
-int cmd_exit(char **args) {
-    (void)args; // suppress warnings
-    return SHELL_EXIT;
-}
-
-int cmd_type(char **args) {
-    for (int i = 0; args[i] != NULL; i++) {
-        bool found = false;
-
-        for (int j = 0, n = ARRAY_SIZE(builtin_cmds); j < n; j++) {
-            if (strcmp(args[i], builtin_cmds[j].name) == 0) {
-                printf("%s is a shell builtin\n", args[i]);
-                found = true;
-                break;
-            }
-        }
-
-        char *path = getenv("PATH");
-        if (!path) {
-            continue;
-        }
-
-        char *path_copy = strdup(path);
-        if (!path_copy) {
-            continue;
-        }
-
-        char *token = strtok(path_copy, ":");
-        while (token != NULL) {
-            DIR *dir = opendir(token);
-            if (!dir) {
-                token = strtok(NULL, ":");
-                continue;
-            }
-
-            struct dirent *entry;
-            while ((entry = readdir(dir)) != NULL) {
-                if (strcmp(args[i], entry->d_name) == 0) {
-                    char full_path[PATH_MAX];
-                    snprintf(full_path, PATH_MAX, "%s/%s", token,
-                             entry->d_name);
-
-                    if (access(full_path, X_OK) == 0) {
-                        found = true;
-                        printf("%s is %s\n", args[i], full_path);
-                        break;
-                    }
-                }
-            }
-            closedir(dir);
-
-            if (found) {
-                break;
-            }
-
-            token = strtok(NULL, ":");
-        }
-
-        free(path_copy);
-
-        if (!found) {
-            printf("%s: not found\n", args[i]);
-        }
-    }
-
-    return 0;
 }
