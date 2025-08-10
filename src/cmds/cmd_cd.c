@@ -14,7 +14,7 @@ int cmd_cd(char **args) {
     }
 
     if (chdir(args[0]) < 0) {
-        return -1;
+        printf("cd: %s: No such file or directory\n", args[0]);
     }
 
     return 0;
