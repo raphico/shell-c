@@ -12,6 +12,7 @@ cmd_t builtin_cmds[] = {
     {.name = "exit", .handler = cmd_exit},
     {.name = "echo", .handler = cmd_echo},
     {.name = "type", .handler = cmd_type},
+    {.name = "pwd", .handler = cmd_pwd},
 };
 
 cmd_handler_t get_cmd_handler(const char *name) {
