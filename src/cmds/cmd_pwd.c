@@ -9,7 +9,7 @@ int cmd_pwd(char **args) {
     char cwd[PATH_MAX];
 
     if (!getcwd(cwd, PATH_MAX)) {
-        return 1;
+        return -1;
     }
 
     printf("%s\n", cwd);

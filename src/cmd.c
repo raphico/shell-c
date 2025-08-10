@@ -13,6 +13,7 @@ cmd_t builtin_cmds[] = {
     {.name = "echo", .handler = cmd_echo},
     {.name = "type", .handler = cmd_type},
     {.name = "pwd", .handler = cmd_pwd},
+    {.name = "cd", .handler = cmd_cd},
 };
 
 cmd_handler_t get_cmd_handler(const char *name) {

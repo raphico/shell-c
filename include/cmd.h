@@ -1,6 +1,6 @@
 #pragma once
 
-enum { SHELL_EXIT = -2, NO_BUILTIN_CMDS = 4 };
+enum { SHELL_EXIT = -2, NO_BUILTIN_CMDS = 5 };
 
 typedef int (*cmd_handler_t)(char **args);
 
@@ -13,6 +13,7 @@ int cmd_exit(char **args);
 int cmd_echo(char **args);
 int cmd_type(char **args);
 int cmd_pwd(char **args);
+int cmd_cd(char **args);
 
 extern cmd_t builtin_cmds[NO_BUILTIN_CMDS];
 
