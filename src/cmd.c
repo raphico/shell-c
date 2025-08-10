@@ -3,6 +3,7 @@
 #include <linux/limits.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -25,7 +26,9 @@ cmd_handler_t get_cmd_handler(const char *name) {
 
 int find_and_run_cmd(const char *name, char **args) {
     int pipefd[2];
-    pipe(pipefd);
+    if (pipe(pipefd) == -1) {
+        return -1;
+    }
 
     pid_t pid = fork();
     if (pid < 0) {
@@ -37,7 +40,7 @@ int find_and_run_cmd(const char *name, char **args) {
         close(pipefd[1]);               // close original write end
 
         execvp(name, args);
-        return -1;
+        _exit(EXIT_FAILURE);
     } else {
         // parent process
         close(pipefd[1]); // close unused read end
@@ -50,8 +53,13 @@ int find_and_run_cmd(const char *name, char **args) {
         }
 
         close(pipefd[0]);
-        waitpid(pid, NULL, 0);
+        int status;
+        waitpid(pid, &status, 0);
 
-        return 0;
+        if (WIFEXITED(status)) {
+            return WEXITSTATUS(status); // Return child's exit code
+        } else {
+            return -1; // Abnormal termination
+        }
     }
 }
