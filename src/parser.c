@@ -28,7 +28,7 @@ char **tokenize_input(char *input, int *argc) {
             continue;
         }
 
-        if (c == ' ' && (!in_squote || !in_dquote)) {
+        if (c == ' ' && !in_squote && !in_dquote) {
             if (j > 0) {
                 buf[j] = '\0';
                 tokens[count++] = strdup(buf);
