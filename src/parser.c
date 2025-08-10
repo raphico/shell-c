@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char **tokenize_input(char *input) {
+char **tokenize_input(char *input, int *argc) {
     // + 1 for a NULL pointer that marks the end of the tokens
     char **tokens = malloc(sizeof(char *) * (MAX_TOKENS + 1));
     if (!tokens) {
@@ -18,6 +18,8 @@ char **tokenize_input(char *input) {
     }
 
     tokens[i] = NULL;
+
+    *argc = i;
 
     return tokens;
 }

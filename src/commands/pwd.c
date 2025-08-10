@@ -1,10 +1,11 @@
-#include "cmd.h"
+#include "shell.h"
 #include <linux/limits.h>
 #include <stdio.h>
 #include <unistd.h>
 
-int cmd_pwd(char **args) {
-    (void)args; // suppress warning
+int exec_pwd(int argc, char **argv) {
+    (void)argv; // suppress warning
+    (void)argc;
 
     char cwd[PATH_MAX];
 

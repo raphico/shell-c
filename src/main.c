@@ -1,5 +1,5 @@
-#include "cmd.h"
 #include "parser.h"
+#include "shell.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,25 +17,27 @@ int main(int argc, char *argv[]) {
         }
 
         input[strcspn(input, "\n")] = '\0';
-        char **args = tokenize_input(input);
-        if (!args || !args[0]) {
-            free(args);
+
+        int argc;
+        char **argv = tokenize_input(input, &argc);
+        if (!argv || !argv[0]) {
+            free(argv);
             continue;
         }
 
-        cmd_handler_t handler = get_cmd_handler(args[0]);
+        cmd_handler_t handler = get_cmd_handler(argv[0]);
         if (!handler) {
-            if (find_and_run_cmd(args[0], args) != 0) {
-                printf("%s: command not found\n", args[0]);
+            if (find_and_run_cmd(argv[0], argv) != 0) {
+                printf("%s: command not found\n", argv[0]);
             }
         } else {
-            int status = handler(args + 1);
+            int status = handler(argc, argv + 1);
             if (status == SHELL_EXIT) {
                 return 0;
             }
         }
 
-        free(args);
+        free(argv);
     }
 
     return 0;

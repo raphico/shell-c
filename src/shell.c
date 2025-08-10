@@ -1,4 +1,4 @@
-#include "cmd.h"
+#include "shell.h"
 #include <dirent.h>
 #include <linux/limits.h>
 #include <stdbool.h>
@@ -8,25 +8,25 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-cmd_t builtin_cmds[] = {
-    {.name = "exit", .handler = cmd_exit},
-    {.name = "echo", .handler = cmd_echo},
-    {.name = "type", .handler = cmd_type},
-    {.name = "pwd", .handler = cmd_pwd},
-    {.name = "cd", .handler = cmd_cd},
+shell_cmd_t builtin_cmds[] = {
+    {.cmd_name = "exit", .cmd_handler = exec_exit},
+    {.cmd_name = "echo", .cmd_handler = exec_echo},
+    {.cmd_name = "type", .cmd_handler = exec_type},
+    {.cmd_name = "pwd", .cmd_handler = exec_pwd},
+    {.cmd_name = "cd", .cmd_handler = exec_cd},
 };
 
 cmd_handler_t get_cmd_handler(const char *name) {
     for (int i = 0, n = NO_BUILTIN_CMDS; i < n; i++) {
-        if (strcmp(name, builtin_cmds[i].name) == 0) {
-            return builtin_cmds[i].handler;
+        if (strcmp(name, builtin_cmds[i].cmd_name) == 0) {
+            return builtin_cmds[i].cmd_handler;
         }
     }
 
     return NULL;
 }
 
-int find_and_run_cmd(const char *name, char **args) {
+int find_and_run_cmd(const char *name, char **argv) {
     int pipefd[2];
     if (pipe(pipefd) == -1) {
         return -1;
@@ -41,7 +41,7 @@ int find_and_run_cmd(const char *name, char **args) {
         dup2(pipefd[1], STDOUT_FILENO); // redirect the stdout to the write end
         close(pipefd[1]);               // close original write end
 
-        execvp(name, args);
+        execvp(name, argv);
         _exit(EXIT_FAILURE);
     } else {
         // parent process

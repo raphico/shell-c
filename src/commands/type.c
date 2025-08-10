@@ -1,17 +1,17 @@
-#include "cmd.h"
+#include "shell.h"
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-int cmd_type(char **args) {
-    for (int i = 0; args[i] != NULL; i++) {
+int exec_type(int argc, char **argv) {
+    for (int i = 0; i < argc - 1; i++) {
         bool found = false;
 
         for (int j = 0, n = NO_BUILTIN_CMDS; j < n; j++) {
-            if (strcmp(args[i], builtin_cmds[j].name) == 0) {
-                printf("%s is a shell builtin\n", args[i]);
+            if (strcmp(argv[i], builtin_cmds[j].cmd_name) == 0) {
+                printf("%s is a shell builtin\n", argv[i]);
                 found = true;
                 break;
             }
@@ -37,14 +37,14 @@ int cmd_type(char **args) {
 
             struct dirent *entry;
             while ((entry = readdir(dir)) != NULL) {
-                if (strcmp(args[i], entry->d_name) == 0) {
+                if (strcmp(argv[i], entry->d_name) == 0) {
                     char full_path[PATH_MAX];
                     snprintf(full_path, PATH_MAX, "%s/%s", token,
                              entry->d_name);
 
                     if (access(full_path, X_OK) == 0) {
                         found = true;
-                        printf("%s is %s\n", args[i], full_path);
+                        printf("%s is %s\n", argv[i], full_path);
                         break;
                     }
                 }
@@ -61,7 +61,7 @@ int cmd_type(char **args) {
         free(path_copy);
 
         if (!found) {
-            printf("%s: not found\n", args[i]);
+            printf("%s: not found\n", argv[i]);
         }
     }
 
