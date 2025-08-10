@@ -16,7 +16,7 @@ char **tokenize_input(char *input, int *argc) {
     while (i < n) {
         char c = input[i];
 
-        if (c == '\\' && !is_escaped) {
+        if (c == '\\' && !is_escaped && !in_squote) {
             i++;
             is_escaped = true;
             continue;
@@ -36,25 +36,22 @@ char **tokenize_input(char *input, int *argc) {
 
         if (c == ' ' && !in_squote && !in_dquote) {
             if (j > 0 || is_escaped) {
-                is_escaped = false;
-
                 buf[j] = '\0';
                 tokens[count++] = strdup(buf);
                 j = 0;
             }
 
+            is_escaped = false;
             i++;
             continue;
         }
 
-        if (j < (int)sizeof(buf)) {
+        if (j < (int)sizeof(buf) - 1) {
             buf[j++] = c;
         }
 
         i++;
-        if (is_escaped) {
-            is_escaped = false;
-        }
+        is_escaped = false;
     }
 
     if (j > 0) {
