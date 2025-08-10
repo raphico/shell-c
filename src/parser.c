@@ -1,25 +1,51 @@
 #include "parser.h"
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 char **tokenize_input(char *input, int *argc) {
-    // + 1 for a NULL pointer that marks the end of the tokens
-    char **tokens = malloc(sizeof(char *) * (MAX_TOKENS + 1));
+    char **tokens = malloc(sizeof(char *) * MAX_TOKENS);
     if (!tokens) {
         return NULL;
     }
 
-    char *token = strtok(input, " \t\n");
+    int i = 0, j = 0, count = 0, n = strlen(input);
+    bool in_quote = false;
+    char buf[1024];
 
-    int i = 0;
-    while (token != NULL && i < MAX_TOKENS) {
-        tokens[i++] = token;
-        token = strtok(NULL, " \t\n");
+    while (i < n) {
+        char c = input[i];
+
+        if (c == '\'') {
+            in_quote = !in_quote;
+            i++;
+            continue;
+        }
+
+        if (c == ' ' && !in_quote) {
+            if (j > 0) {
+                buf[j] = '\0';
+                tokens[count++] = strdup(buf);
+                j = 0;
+            }
+
+            i++;
+            continue;
+        }
+
+
+        if (j < (int)sizeof(buf)) {
+            buf[j++] = c;
+        }
+
+        i++;
     }
 
-    tokens[i] = NULL;
+    if (j > 0) {
+        buf[j] = '\0';
+        tokens[count++] = strdup(buf);
+    }
 
-    *argc = i;
-
+    *argc = count;
     return tokens;
 }
