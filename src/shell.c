@@ -53,18 +53,22 @@ int find_and_run_cmd(const char *name, char **argv) {
     }
 
     if (pid == 0) {
+        // child: execute command
         execvp(name, argv);
         perror(name);
         _exit(EXIT_FAILURE);
     }
 
-    // blocks until the child finishes and returns its exit code
+    // parent: blocks until the child finishes and returns its exit code
     int status = 0;
-    waitpid(status, &status, 0);
+    if (waitpid(pid, &status, 0) < 0) {
+        perror("waitpid");
+        return -1;
+    }
 
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     }
-
+    
     return -1;
 }

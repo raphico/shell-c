@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
                 if (status == SHELL_EXIT) {
                     restore_fds(save_fds, 3);
                     cleanup_cmd_ctx(ctx);
-                    for (int i = 0; i < argc; i++) {
+                    for (int i = 0; i < tokc; i++) {
                         free(tokens[i]);
                     }
                     free(tokens);
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
             restore_fds(save_fds, 3);
         }
 
-        for (int i = 0; i < argc; i++) {
+        for (int i = 0; i < tokc; i++) {
             free(tokens[i]);
         }
         free(tokens);
