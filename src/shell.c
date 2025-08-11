@@ -16,6 +16,25 @@ shell_cmd_t builtin_cmds[] = {
     {.cmd_name = "cd", .cmd_handler = exec_cd},
 };
 
+void cleanup_cmd_ctx(cmd_ctx_t *ctx) {
+    if (!ctx)
+        return;
+
+    for (int i = 0; i < ctx->argc; i++) {
+        free(ctx->argv[i]);
+    }
+    free(ctx->argv);
+
+    redirect_t *ptr = ctx->redir;
+    while (ptr != NULL) {
+        redirect_t *next = ptr->next;
+        free(ptr->filename);
+        free(ptr);
+        ptr = next;
+    }
+    free(ctx);
+}
+
 cmd_handler_t get_cmd_handler(const char *name) {
     for (int i = 0, n = NO_BUILTIN_CMDS; i < n; i++) {
         if (strcmp(name, builtin_cmds[i].cmd_name) == 0) {

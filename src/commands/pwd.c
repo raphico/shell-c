@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int exec_pwd(int argc, char **argv) {
-    (void)argv; // suppress warning
-    (void)argc;
+int exec_pwd(cmd_ctx_t *ctx) {
+    (void)ctx; // suppress warning
 
     char cwd[PATH_MAX];
 

@@ -4,13 +4,13 @@
 #include <string.h>
 #include <unistd.h>
 
-int exec_cd(int argc, char **argv) {
-    if (argc > 2) {
-        printf("cd: too many arguments\n");
+int exec_cd(cmd_ctx_t *ctx) {
+    if (ctx->argc > 2) {
+        fprintf(stderr, "cd: too many arguments\n");
         return -1;
     }
 
-    if (strcmp(argv[0], "~") == 0) {
+    if (strcmp(ctx->argv[1], "~") == 0) {
         char *home_dir = getenv("HOME");
         if (!home_dir) {
             return -1;
@@ -19,8 +19,8 @@ int exec_cd(int argc, char **argv) {
         return chdir(home_dir);
     }
 
-    if (chdir(argv[0]) < 0) {
-        printf("cd: %s: No such file or directory\n", argv[0]);
+    if (chdir(ctx->argv[1]) < 0) {
+        fprintf(stderr, "cd: %s: No such file or directory\n", ctx->argv[1]);
     }
 
     return 0;
