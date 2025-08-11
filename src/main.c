@@ -49,11 +49,12 @@ int main(int argc, char *argv[]) {
             cmd_handler_t handler = get_cmd_handler(ctx->argv[0]);
             if (!handler) {
                 if (find_and_run_cmd(ctx->argv[0], ctx->argv) != 0) {
-                    fprintf(stderr, "%s: command not found\n", argv[0]);
+                    fprintf(stderr, "%s: command not found\n", ctx->argv[0]);
                 }
             } else {
                 int status = handler(ctx);
                 if (status == SHELL_EXIT) {
+                    restore_fds(save_fds, 3);
                     cleanup_cmd_ctx(ctx);
                     for (int i = 0; i < argc; i++) {
                         free(tokens[i]);

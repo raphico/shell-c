@@ -46,41 +46,25 @@ cmd_handler_t get_cmd_handler(const char *name) {
 }
 
 int find_and_run_cmd(const char *name, char **argv) {
-    int pipefd[2];
-    if (pipe(pipefd) == -1) {
-        return -1;
-    }
-
     pid_t pid = fork();
     if (pid < 0) {
+        perror("fork");
         return -1;
-    } else if (pid == 0) {
-        // child process
-        close(pipefd[0]);               // close unused write end
-        dup2(pipefd[1], STDOUT_FILENO); // redirect the stdout to the write end
-        close(pipefd[1]);               // close original write end
-
-        execvp(name, argv);
-        _exit(EXIT_FAILURE);
-    } else {
-        // parent process
-        close(pipefd[1]); // close unused read end
-
-        char buf[1024];
-        ssize_t count = 0;
-        while ((count = read(pipefd[0], buf, sizeof(buf) - 1)) > 0) {
-            buf[count] = '\0';
-            printf("%s", buf);
-        }
-
-        close(pipefd[0]);
-        int status;
-        waitpid(pid, &status, 0);
-
-        if (WIFEXITED(status)) {
-            return WEXITSTATUS(status); // Return child's exit code
-        } else {
-            return -1; // Abnormal termination
-        }
     }
+
+    if (pid == 0) {
+        execvp(name, argv);
+        perror(name);
+        _exit(EXIT_FAILURE);
+    }
+
+    // blocks until the child finishes and returns its exit code
+    int status = 0;
+    waitpid(status, &status, 0);
+
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    }
+
+    return -1;
 }
