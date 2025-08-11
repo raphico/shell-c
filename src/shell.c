@@ -56,7 +56,7 @@ int find_and_run_cmd(const char *name, char **argv) {
         // child: execute command
         execvp(name, argv);
         perror(name);
-        _exit(EXIT_FAILURE);
+        _exit(127); // special code: command not found
     }
 
     // parent: blocks until the child finishes and returns its exit code
@@ -69,6 +69,6 @@ int find_and_run_cmd(const char *name, char **argv) {
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     }
-    
+
     return -1;
 }

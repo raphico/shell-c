@@ -48,7 +48,8 @@ int main(int argc, char *argv[]) {
         if (apply_redirects(ctx, save_fds) == 0) {
             cmd_handler_t handler = get_cmd_handler(ctx->argv[0]);
             if (!handler) {
-                if (find_and_run_cmd(ctx->argv[0], ctx->argv) != 0) {
+                int exit_code = find_and_run_cmd(ctx->argv[0], ctx->argv);
+                if (exit_code == 127) {
                     fprintf(stderr, "%s: command not found\n", ctx->argv[0]);
                 }
             } else {
