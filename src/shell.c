@@ -55,7 +55,6 @@ int find_and_run_cmd(const char *name, char **argv) {
     if (pid == 0) {
         // child: execute command
         execvp(name, argv);
-        perror(name);
         _exit(127); // special code: command not found
     }
 
