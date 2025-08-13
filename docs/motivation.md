@@ -1,0 +1,1 @@
+This project is an educational implementation of a POSIX shell. The goal is to understand how command-line interpreters work under the hood: from parsing user input to executing programs and managing I/O streams. The shell is not a full replacement for Bash or Zsh, but it follows POSIX principles and supports common functionality used in everyday CLI work.

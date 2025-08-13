@@ -2,7 +2,9 @@
 
 A minimal POSIX-compliant shell written in C that interprets commands, executes external programs, and supports built-in commands.
 
-This project is an educational implementation of a POSIX shell. The goal is to understand how command-line interpreters work under the hood: from parsing user input to executing programs and managing I/O streams. The shell is not a full replacement for Bash or Zsh, but it follows POSIX principles and supports common functionality used in everyday CLI work.
+## Documentation
+
+- [Project Motivation](./docs/motivation.md)
 
 ## Features implemented
 
@@ -46,6 +48,15 @@ This project is an educational implementation of a POSIX shell. The goal is to u
    - Execute commands from history
    - Persistent history (save/load from file)
 
+## Tech Stack
+
+- **Language:** C (C99 standard)
+- **Standards Compliance:** POSIX
+- **Platform:** Developed and tested on Linux. Compatible with macOS (POSIX-compliant). Windows support would require adapting process and file descriptor APIs to WinAPI.
+- **Build System:** CMake (project configuration) with Ninja (fast incremental builds)
+- **Compiler:** Clang (tested; GCC compatible)
+- **Package Manager:** vcpkg for dependency management
+
 ## How to run
 
 1. clone the repository
@@ -74,6 +85,6 @@ cd shell-c
 └── your_program.sh       # Shell script to run or test the program
 ```
 
-## Try the Challenge Yourself
+## Attribution
 
-This project was built as part of the [Codecrafters "Build Your Own Shell" Challenge](https://app.codecrafters.io/r/zealous-guineapig-988263). Use my link to get **7 days free** if you want to take the challenge and build your own server from scratch.
+This project was built as part of the [Codecrafters "Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview)
